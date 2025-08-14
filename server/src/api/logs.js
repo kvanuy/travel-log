@@ -40,4 +40,20 @@ router.post('/', async (req, res, next) =>{
     
 });
 
+router.delete('/', async (req, res, next) => {
+  try{
+    //const entries = await blogentry.deleteOne({title: "empire state building"})
+    const entries = await blogentry.deleteOne(req.body)
+  ;  
+  res.send(entries );
+} catch (error){
+  next(error);
+}}
+)
+  
+
+
+
+
+
 module.exports = router;
