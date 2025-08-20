@@ -20,10 +20,7 @@ import { listLogEntries, createLogEntry, deleteLogEntry } from './API';
 import fetchLayerData from './Layer';
 import exampleDOM from './LogForm'
 
-//var ReactDOM = require('react-dom');
 
-
-//declare init const
 const INITIAL_CENTER = [
   -74.0242,
   40.6941
@@ -63,45 +60,8 @@ function App() {
   var coordinatesList = []
 
   
-  const { register, handleSubmit } = useForm();
-
   const searchBoxCore = useSearchBoxCore({ accessToken: accessToken });
   
-
-  const getLocationPts = useCallback(async () => {    
-        try {
-            const data = await fetch('http://localhost:1337/api/logs')
-              .then(d => d.json())
-    
-            setLogEntries( data)
-            console.log(data)
-            
-        } catch (error) {
-            console.error(error)
-        }
-    }, [logEntries])
-
-
-  const newPoints = useCallback(async (entry) => {    
-        try {
-          const url = 'http://localhost:1337/api/logs'
-  const response = await fetch(url, {method:'POST', 
-    headers: {'content-type' : 'application/json',},
-    body: entry,
-  }).then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');}
-      console.log(response)
-      getLocationPts()
-              })   
-        } catch (error) {
-            console.error(error)
-        }
-    }, [logEntries])
-
-
-    
-
 
     useEffect(() => {
     performCategorySearch()
@@ -112,88 +72,6 @@ function App() {
   }
   , [searchCategory])
 
-
-function parseISOString(s) {
-  var b = s.split(/\D+/);
-  return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6])).toDateString();
-}
-
-
-/*  useEffect(() => {
-
-
-      //getLocationPts()
-      for (let key in logEntries){
-   
-       
-
-                const name = 'abc';
-      const innerHtmlContent = `<div ">
-                  <h4 class="h4Class">${name} </h4> </div>`;
-
-      const divElement = document.createElement('div');
-      const titleElement = document.createElement('h2')
-      titleElement.innerText = logEntries[key].title
-      const comElement = document.createElement('h3')
-      comElement.innerText =  logEntries[key].comment
-      const image = document.createElement('img');
-      image.setAttribute('src', logEntries[key].image);
-      //const rankElement = document.createElement('p')
-      //comElement.innerText = logEntries[key].rank
-      const dateElement = document.createElement('h3')
-      dateElement.innerText = parseISOString(logEntries[key].visitDate)
-
-      divElement.append(titleElement, dateElement, comElement, image)
-
-
-      const assignBtn = document.createElement('div');
-      assignBtn.innerHTML = `<button class="btn btn-success btn-simple text-white" > Delete</button>`;
-      //divElement.innerHTML = innerHtmlContent;
-      divElement.appendChild(assignBtn);
-      // btn.className = 'btn';
-      assignBtn.addEventListener('click', (e) => {
-        const deleteCond =  {latitude: logEntries[key].longitude , longitude:  logEntries[key].latitude }
-
-        console.log(deleteCond)
-        deleteLogEntry(deleteCond)
-        popup.remove()
-       // getLocationPts()
-        if (markerArray!==null) {
-    for (var i = markerArray.length - 1; i >= 0; i--) {
-      markerArray[i].remove();
-    }
-    markerArray = []
-    getLocationPts()
-
-}
-        //markerArray[[logEntries[key].longitude, logEntries[key].latitude]].remove()
-        console.log(markerArray)
-
-
-      });
-        //getLocationPts()
-
-          const popup = new mapboxgl.Popup({ 
-            closeButton: false,
-            closeonClick: false
-             })
-          //.setText(logEntries[key].title)
-          .setDOMContent(divElement)
-      ;
-
-          const marker1 = new mapboxgl.Marker()
-          .setLngLat([logEntries[key].longitude, logEntries[key].latitude])
-          .setPopup(popup)
-          .addTo(mapRef.current);
-          marker1._element.id = logEntries[key]._id
-          console.log(marker1, [logEntries[key].longitude, logEntries[key].latitude])
-             markerArray.push(marker1)
-             coordinatesList.push([[logEntries[key].longitude, logEntries[key].latitude]])
-             //getLocationPts()
-
-        }},[logEntries]
-      )
-*/
 
   const performCategorySearch = async () => {
     
@@ -257,7 +135,8 @@ function ClickedGameObj(feature){
     mapRef.current.on('load',() => {
       //getBboxAndFetch()
       setMapLoaded(true);
-      getLocationPts() 
+      listLogEntries(logEntries, setLogEntries)
+      //getLocationPts() 
     })
 
     mapRef.current.addInteraction('bar-click-interaction', {
@@ -291,11 +170,7 @@ function ClickedGameObj(feature){
 
             console.log('click button');
 
-            //AddGameObjToInventory(e.feature.geometry.coordinates)
-     /*       handleSubmit('input', document.getElementById('input').value, {
-            shouldValidate: true,
-            shouldDirty: true
-          })*/          console.log(document.getElementById('img'))
+            console.log(document.getElementById('img'))
 
             console.log('{test-data:' + e.feature.geometry.coordinates)
             const data = {
@@ -308,25 +183,12 @@ function ClickedGameObj(feature){
 
 }
             
-            //AddGameObjToInventory(document, e.feature)
-            //createLogEntry
-            newPoints(JSON.stringify(data))
-            listLogEntries(logEntries, setLogEntries)
-            getLocationPts()
+      
+            createLogEntry(JSON.stringify(data),logEntries, setLogEntries)
             console.log(logEntries)
             pop.remove()
 
-             //  const popup = new mapboxgl.Popup({ 
-     // closeButton: false,
-     // closeonClick: false,
-    //  rcoffset: 25 })
-  //  .setText(data["title"]);
-
-  //  const marker1 = new mapboxgl.Marker()
-  //  .setLngLat([data["longitude"], data["latitude"]])
-  //  .setPopup(popup)
-  //  .addTo(mapRef.current);
-
+          
     
           }
         
@@ -375,9 +237,8 @@ function ClickedGameObj(feature){
     mapRef.current.on('click', function (e){
 
       const features = mapRef.current.queryRenderedFeatures(e.point);
+      
       console.log(e)
-
-      getLocationPts()
 
       const displayProperties = [
         'type',
@@ -388,6 +249,14 @@ function ClickedGameObj(feature){
         'sourceLayer',
         'state'
       ];
+
+      /*
+: 
+40.70146767046461
+longitude
+: 
+-74.01311695575714
+      */
 
       const formattedFeatures = features.map((feat) => {
         const displayFeat = {};
@@ -503,6 +372,8 @@ function ClickedGameObj(feature){
                     key={feature._id}
                     map={mapRef.current}
                     feature={feature}
+                    logstate = {logEntries}
+                    logset = {setLogEntries}
                 />)
             })}
       <pre

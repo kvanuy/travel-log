@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl'
 import { listLogEntries, createLogEntry, deleteLogEntry } from './API';
 
 
-const Marker = ({ map, feature}) => {
+const Marker = ({ map, feature, logstate, logset}) => {
     const { geometry } = feature
 
     const markerRef = useRef()
@@ -35,11 +35,12 @@ const Marker = ({ map, feature}) => {
       //divElement.innerHTML = innerHtmlContent;
       divElement.appendChild(assignBtn);
       // btn.className = 'btn';
-      assignBtn.addEventListener('click', (e) => {
-        const deleteCond =  {latitude: feature.latitude , longitude:  feature.longitude }
+      assignBtn.addEventListener('click', (e,logEntries, setLogEntries) => {
+        const deleteCond =  {"latitude": feature.latitude , "longitude":  feature.longitude }
+        console.log(popup)
 
         console.log(deleteCond)
-        deleteLogEntry(deleteCond)
+        deleteLogEntry(JSON.stringify(deleteCond),logstate, logset)
         popup.remove()})
 
 
