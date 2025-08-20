@@ -28,7 +28,10 @@ router.post('/', async (req, res, next) =>{
     try{
         const LogEntry = new blogentry(req.body);
         const createdEntry  = await LogEntry.save();
-        res.json(createdEntry);
+
+        const entries = await blogentry.find();
+        //res.json(createdEntry);
+        res.json(entries);
         
     } catch (error) {
         console.log(error.name)

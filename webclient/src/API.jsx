@@ -1,6 +1,6 @@
 const API_URL = 'http://localhost:1337';
 
-export async function listLogEntries() {
+export async function listLogEntries(logEntries, setLogEntries) {
   const url = 'http://localhost:1337/api/logs';
   try {
     const response = await fetch(url, {method: 'GET'});
@@ -8,7 +8,8 @@ export async function listLogEntries() {
       throw new Error(`Response status: ${response.status}`);
     }
     const json = await response.json();
-    console.log(json)
+    console.log('list log', json)
+    setLogEntries(json)
     return json
   } catch (error) {
     console.error(error.message);
@@ -25,6 +26,11 @@ export async function createLogEntry(entry){
     if (!response.ok) {
       throw new Error('Network response was not ok');}
       console.log(response)
+
+      
+
+
+
 })
 }
 

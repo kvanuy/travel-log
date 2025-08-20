@@ -82,6 +82,27 @@ function App() {
     }, [logEntries])
 
 
+  const newPoints = useCallback(async (entry) => {    
+        try {
+          const url = 'http://localhost:1337/api/logs'
+  const response = await fetch(url, {method:'POST', 
+    headers: {'content-type' : 'application/json',},
+    body: entry,
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');}
+      console.log(response)
+      getLocationPts()
+              })   
+        } catch (error) {
+            console.error(error)
+        }
+    }, [logEntries])
+
+
+    
+
+
     useEffect(() => {
     performCategorySearch()
     return () => {
@@ -98,7 +119,9 @@ function parseISOString(s) {
 }
 
 
-  useEffect(() => {
+/*  useEffect(() => {
+
+
       //getLocationPts()
       for (let key in logEntries){
    
@@ -170,7 +193,7 @@ function parseISOString(s) {
 
         }},[logEntries]
       )
-
+*/
 
   const performCategorySearch = async () => {
     
@@ -277,16 +300,18 @@ function ClickedGameObj(feature){
             console.log('{test-data:' + e.feature.geometry.coordinates)
             const data = {
     "title": e.feature.properties.name,
-    "comment": document.getElementById('comment'),
-    "image": document.getElementById('img'),
+    "comment": document.getElementById('comment').value,
+    "image": document.getElementById('img').value,
     "latitude": coordinates[1],
     "longitude": coordinates[0],
-    "visitDate" : document.getElementById('date')
+    "visitDate" : document.getElementById('date').value
 
 }
             
             //AddGameObjToInventory(document, e.feature)
-            createLogEntry(JSON.stringify(data))
+            //createLogEntry
+            newPoints(JSON.stringify(data))
+            listLogEntries(logEntries, setLogEntries)
             getLocationPts()
             console.log(logEntries)
             pop.remove()
@@ -473,6 +498,13 @@ function ClickedGameObj(feature){
 
         {/* Map container */}
       <div id='map-container' ref={mapContainerRef} />
+       {mapRef.current && logEntries && logEntries?.map((feature) => {
+                return (<Marker
+                    key={feature._id}
+                    map={mapRef.current}
+                    feature={feature}
+                />)
+            })}
       <pre
         
         style={{
